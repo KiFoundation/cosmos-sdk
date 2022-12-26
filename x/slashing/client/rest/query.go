@@ -51,7 +51,7 @@ func signingInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QuerySigningInfo)
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -81,7 +81,7 @@ func signingInfoHandlerListFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QuerySigningInfos)
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -100,7 +100,7 @@ func queryParamsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 
 		route := fmt.Sprintf("custom/%s/parameters", types.QuerierRoute)
 
-		res, height, err := clientCtx.QueryWithData(route, nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

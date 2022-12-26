@@ -244,7 +244,7 @@ func redelegationsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryRedelegations), bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryRedelegations), bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -309,7 +309,7 @@ func validatorsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryValidators)
 
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -353,7 +353,7 @@ func historicalInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryHistoricalInfo), bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryHistoricalInfo), bz)
 		if rest.CheckBadRequestError(w, err) {
 			return
 		}
@@ -371,7 +371,7 @@ func poolHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryPool), nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryPool), nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -389,7 +389,7 @@ func paramsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters), nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters), nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

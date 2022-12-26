@@ -54,7 +54,7 @@ func queryEvidenceHandler(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryEvidence)
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -84,7 +84,7 @@ func queryAllEvidenceHandler(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAllEvidence)
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

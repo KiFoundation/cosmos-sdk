@@ -36,7 +36,7 @@ func queryParamsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/gov/%s/%s", types.QueryParams, paramType), nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/gov/%s/%s", types.QueryParams, paramType), nil)
 		if rest.CheckNotFoundError(w, err) {
 			return
 		}
@@ -74,7 +74,7 @@ func queryProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData("custom/gov/proposal", bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), "custom/gov/proposal", bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -106,7 +106,7 @@ func queryDepositsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, _, err := clientCtx.QueryWithData("custom/gov/proposal", bz)
+		res, _, err := clientCtx.QueryWithData(r.Context(), "custom/gov/proposal", bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -122,7 +122,7 @@ func queryDepositsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		if !(propStatus == types.StatusVotingPeriod || propStatus == types.StatusDepositPeriod) {
 			res, err = gcutils.QueryDepositsByTxQuery(r.Context(), clientCtx, params)
 		} else {
-			res, _, err = clientCtx.QueryWithData("custom/gov/deposits", bz)
+			res, _, err = clientCtx.QueryWithData(r.Context(), "custom/gov/deposits", bz)
 		}
 
 		if rest.CheckInternalServerError(w, err) {
@@ -197,7 +197,7 @@ func queryDepositHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, _, err := clientCtx.QueryWithData("custom/gov/deposit", bz)
+		res, _, err := clientCtx.QueryWithData(r.Context(), "custom/gov/deposit", bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -216,7 +216,7 @@ func queryDepositHandlerFn(clientCtx client.Context) http.HandlerFunc {
 				return
 			}
 
-			res, _, err = clientCtx.QueryWithData("custom/gov/proposal", bz)
+			res, _, err = clientCtx.QueryWithData(r.Context(), "custom/gov/proposal", bz)
 			if err != nil || len(res) == 0 {
 				err := fmt.Errorf("proposalID %d does not exist", proposalID)
 				rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
@@ -274,7 +274,7 @@ func queryVoteHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, _, err := clientCtx.QueryWithData("custom/gov/vote", bz)
+		res, _, err := clientCtx.QueryWithData(r.Context(), "custom/gov/vote", bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -293,7 +293,7 @@ func queryVoteHandlerFn(clientCtx client.Context) http.HandlerFunc {
 				return
 			}
 
-			res, _, err = clientCtx.QueryWithData("custom/gov/proposal", bz)
+			res, _, err = clientCtx.QueryWithData(r.Context(), "custom/gov/proposal", bz)
 			if err != nil || len(res) == 0 {
 				err := fmt.Errorf("proposalID %d does not exist", proposalID)
 				rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
@@ -342,7 +342,7 @@ func queryVotesOnProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, _, err := clientCtx.QueryWithData("custom/gov/proposal", bz)
+		res, _, err := clientCtx.QueryWithData(r.Context(), "custom/gov/proposal", bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -365,7 +365,7 @@ func queryVotesOnProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 				return
 			}
 
-			res, _, err = clientCtx.QueryWithData("custom/gov/votes", bz)
+			res, _, err = clientCtx.QueryWithData(r.Context(), "custom/gov/votes", bz)
 		}
 
 		if rest.CheckInternalServerError(w, err) {
@@ -423,7 +423,7 @@ func queryProposalsWithParameterFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryProposals)
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -462,7 +462,7 @@ func queryTallyOnProposalHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData("custom/gov/tally", bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), "custom/gov/tally", bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

@@ -170,7 +170,7 @@ func queryParamsHandler(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParams)
-		res, height, err := clientCtx.QueryWithData(route, nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

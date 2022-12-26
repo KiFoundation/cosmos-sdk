@@ -78,7 +78,7 @@ func (ctx Context) Invoke(grpcCtx gocontext.Context, method string, req, reply i
 		Height: ctx.Height,
 	}
 
-	res, err := ctx.QueryABCI(abciReq)
+	res, err := ctx.QueryABCI(grpcCtx, abciReq)
 	if err != nil {
 		return err
 	}

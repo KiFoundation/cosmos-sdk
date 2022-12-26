@@ -50,7 +50,7 @@ func QueryBalancesRequestHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := ctx.QueryWithData(route, bz)
+		res, height, err := ctx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -80,7 +80,7 @@ func totalSupplyHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryTotalSupply), bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryTotalSupply), bz)
 
 		if rest.CheckInternalServerError(w, err) {
 			return
@@ -107,7 +107,7 @@ func supplyOfHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QuerySupplyOf), bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QuerySupplyOf), bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

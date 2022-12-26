@@ -1,6 +1,7 @@
 package baseapp
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -405,7 +406,7 @@ func (app *BaseApp) snapshot(height int64) {
 
 // Query implements the ABCI interface. It delegates to CommitMultiStore if it
 // implements Queryable.
-func (app *BaseApp) Query(req abci.RequestQuery) (res abci.ResponseQuery) {
+func (app *BaseApp) Query(ctx context.Context, req abci.RequestQuery) (res abci.ResponseQuery) {
 	defer telemetry.MeasureSince(time.Now(), "abci", "query")
 
 	// Add panic recovery for all queries.
@@ -424,7 +425,7 @@ func (app *BaseApp) Query(req abci.RequestQuery) (res abci.ResponseQuery) {
 	// handle gRPC routes first rather than calling splitPath because '/' characters
 	// are used as part of gRPC paths
 	if grpcHandler := app.grpcQueryRouter.Route(req.Path); grpcHandler != nil {
-		return app.handleQueryGRPC(grpcHandler, req)
+		return app.handleQueryGRPC(ctx, grpcHandler, req)
 	}
 
 	path := splitPath(req.Path)
@@ -574,13 +575,14 @@ func (app *BaseApp) ApplySnapshotChunk(req abci.RequestApplySnapshotChunk) abci.
 	}
 }
 
-func (app *BaseApp) handleQueryGRPC(handler GRPCQueryHandler, req abci.RequestQuery) abci.ResponseQuery {
-	ctx, err := app.createQueryContext(req.Height, req.Prove)
+func (app *BaseApp) handleQueryGRPC(ctx context.Context, handler GRPCQueryHandler, req abci.RequestQuery) abci.ResponseQuery {
+	sdkCtx, err := app.createQueryContext(req.Height, req.Prove)
+	sdkCtx = sdkCtx.WithContext(ctx)
 	if err != nil {
 		return sdkerrors.QueryResultWithDebug(err, app.trace)
 	}
 
-	res, err := handler(ctx, req)
+	res, err := handler(sdkCtx, req)
 	if err != nil {
 		res = sdkerrors.QueryResultWithDebug(gRPCErrorToSDKError(err), app.trace)
 		res.Height = req.Height

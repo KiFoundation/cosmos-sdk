@@ -37,7 +37,7 @@ func queryParamsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(route, nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -56,7 +56,7 @@ func queryInflationHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(route, nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -75,7 +75,7 @@ func queryAnnualProvisionsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(route, nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

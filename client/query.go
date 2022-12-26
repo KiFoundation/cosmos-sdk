@@ -1,7 +1,7 @@
 package client
 
 import (
-	"context"
+	gocontext "context"
 	"fmt"
 	"strings"
 
@@ -31,30 +31,30 @@ func (ctx Context) GetNode() (rpcclient.Client, error) {
 // Query performs a query to a Tendermint node with the provided path.
 // It returns the result and height of the query upon success or an error if
 // the query fails.
-func (ctx Context) Query(path string) ([]byte, int64, error) {
-	return ctx.query(path, nil)
+func (ctx Context) Query(goctx gocontext.Context, path string) ([]byte, int64, error) {
+	return ctx.query(goctx, path, nil)
 }
 
 // QueryWithData performs a query to a Tendermint node with the provided path
 // and a data payload. It returns the result and height of the query upon success
 // or an error if the query fails.
-func (ctx Context) QueryWithData(path string, data []byte) ([]byte, int64, error) {
-	return ctx.query(path, data)
+func (ctx Context) QueryWithData(goctx gocontext.Context, path string, data []byte) ([]byte, int64, error) {
+	return ctx.query(goctx, path, data)
 }
 
 // QueryStore performs a query to a Tendermint node with the provided key and
 // store name. It returns the result and height of the query upon success
 // or an error if the query fails.
-func (ctx Context) QueryStore(key tmbytes.HexBytes, storeName string) ([]byte, int64, error) {
-	return ctx.queryStore(key, storeName, "key")
+func (ctx Context) QueryStore(goctx gocontext.Context, key tmbytes.HexBytes, storeName string) ([]byte, int64, error) {
+	return ctx.queryStore(goctx, key, storeName, "key")
 }
 
 // QueryABCI performs a query to a Tendermint node with the provide RequestQuery.
 // It returns the ResultQuery obtained from the query. The height used to perform
 // the query is the RequestQuery Height if it is non-zero, otherwise the context
 // height is used.
-func (ctx Context) QueryABCI(req abci.RequestQuery) (abci.ResponseQuery, error) {
-	return ctx.queryABCI(req)
+func (ctx Context) QueryABCI(goctx gocontext.Context, req abci.RequestQuery) (abci.ResponseQuery, error) {
+	return ctx.queryABCI(goctx, req)
 }
 
 // GetFromAddress returns the from address from the context's name.
@@ -72,7 +72,7 @@ func (ctx Context) GetFromName() string {
 	return ctx.FromName
 }
 
-func (ctx Context) queryABCI(req abci.RequestQuery) (abci.ResponseQuery, error) {
+func (ctx Context) queryABCI(goctx gocontext.Context, req abci.RequestQuery) (abci.ResponseQuery, error) {
 	node, err := ctx.GetNode()
 	if err != nil {
 		return abci.ResponseQuery{}, err
@@ -91,7 +91,7 @@ func (ctx Context) queryABCI(req abci.RequestQuery) (abci.ResponseQuery, error) 
 		Prove:  req.Prove,
 	}
 
-	result, err := node.ABCIQueryWithOptions(context.Background(), req.Path, req.Data, opts)
+	result, err := node.ABCIQueryWithOptions(goctx, req.Path, req.Data, opts)
 	if err != nil {
 		return abci.ResponseQuery{}, err
 	}
@@ -124,8 +124,8 @@ func sdkErrorToGRPCError(resp abci.ResponseQuery) error {
 // query performs a query to a Tendermint node with the provided store name
 // and path. It returns the result and height of the query upon success
 // or an error if the query fails.
-func (ctx Context) query(path string, key tmbytes.HexBytes) ([]byte, int64, error) {
-	resp, err := ctx.queryABCI(abci.RequestQuery{
+func (ctx Context) query(goctx gocontext.Context, path string, key tmbytes.HexBytes) ([]byte, int64, error) {
+	resp, err := ctx.queryABCI(goctx, abci.RequestQuery{
 		Path:   path,
 		Data:   key,
 		Height: ctx.Height,
@@ -140,9 +140,9 @@ func (ctx Context) query(path string, key tmbytes.HexBytes) ([]byte, int64, erro
 // queryStore performs a query to a Tendermint node with the provided a store
 // name and path. It returns the result and height of the query upon success
 // or an error if the query fails.
-func (ctx Context) queryStore(key tmbytes.HexBytes, storeName, endPath string) ([]byte, int64, error) {
+func (ctx Context) queryStore(goctx gocontext.Context, key tmbytes.HexBytes, storeName, endPath string) ([]byte, int64, error) {
 	path := fmt.Sprintf("/store/%s/%s", storeName, endPath)
-	return ctx.query(path, key)
+	return ctx.query(goctx, path, key)
 }
 
 // isQueryStoreWithProof expects a format like /<queryType>/<storeName>/<subpath>

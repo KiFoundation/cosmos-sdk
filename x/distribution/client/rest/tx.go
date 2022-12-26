@@ -79,7 +79,7 @@ func newWithdrawDelegatorRewardsHandlerFn(clientCtx client.Context) http.Handler
 			return
 		}
 
-		msgs, err := common.WithdrawAllDelegatorRewards(clientCtx, delAddr)
+		msgs, err := common.WithdrawAllDelegatorRewards(r.Context(), clientCtx, delAddr)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

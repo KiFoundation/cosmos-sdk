@@ -24,7 +24,7 @@ func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 func getCurrentPlanHandler(clientCtx client.Context) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, request *http.Request) {
 		// ignore height for now
-		res, _, err := clientCtx.Query(fmt.Sprintf("custom/%s/%s", types.QuerierKey, types.QueryCurrent))
+		res, _, err := clientCtx.Query(request.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierKey, types.QueryCurrent))
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -53,7 +53,7 @@ func getDonePlanHandler(clientCtx client.Context) func(http.ResponseWriter, *htt
 			return
 		}
 
-		res, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierKey, types.QueryApplied), bz)
+		res, _, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/%s", types.QuerierKey, types.QueryApplied), bz)
 		if rest.CheckBadRequestError(w, err) {
 			return
 		}

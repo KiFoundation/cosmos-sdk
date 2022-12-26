@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -10,7 +11,7 @@ import (
 
 // QueryDelegationRewards queries a delegation rewards between a delegator and a
 // validator.
-func QueryDelegationRewards(clientCtx client.Context, delAddr, valAddr string) ([]byte, int64, error) {
+func QueryDelegationRewards(ctx context.Context, clientCtx client.Context, delAddr, valAddr string) ([]byte, int64, error) {
 	delegatorAddr, err := sdk.AccAddressFromBech32(delAddr)
 	if err != nil {
 		return nil, 0, err
@@ -28,13 +29,14 @@ func QueryDelegationRewards(clientCtx client.Context, delAddr, valAddr string) (
 	}
 
 	route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryDelegationRewards)
-	return clientCtx.QueryWithData(route, bz)
+	return clientCtx.QueryWithData(ctx, route, bz)
 }
 
 // QueryDelegatorValidators returns delegator's list of validators
 // it submitted delegations to.
-func QueryDelegatorValidators(clientCtx client.Context, delegatorAddr sdk.AccAddress) ([]byte, error) {
+func QueryDelegatorValidators(ctx context.Context, clientCtx client.Context, delegatorAddr sdk.AccAddress) ([]byte, error) {
 	res, _, err := clientCtx.QueryWithData(
+		ctx,
 		fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryDelegatorValidators),
 		clientCtx.LegacyAmino.MustMarshalJSON(types.NewQueryDelegatorParams(delegatorAddr)),
 	)
@@ -42,8 +44,9 @@ func QueryDelegatorValidators(clientCtx client.Context, delegatorAddr sdk.AccAdd
 }
 
 // QueryValidatorCommission returns a validator's commission.
-func QueryValidatorCommission(clientCtx client.Context, validatorAddr sdk.ValAddress) ([]byte, error) {
+func QueryValidatorCommission(ctx context.Context, clientCtx client.Context, validatorAddr sdk.ValAddress) ([]byte, error) {
 	res, _, err := clientCtx.QueryWithData(
+		ctx,
 		fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryValidatorCommission),
 		clientCtx.LegacyAmino.MustMarshalJSON(types.NewQueryValidatorCommissionParams(validatorAddr)),
 	)
@@ -52,10 +55,10 @@ func QueryValidatorCommission(clientCtx client.Context, validatorAddr sdk.ValAdd
 
 // WithdrawAllDelegatorRewards builds a multi-message slice to be used
 // to withdraw all delegations rewards for the given delegator.
-func WithdrawAllDelegatorRewards(clientCtx client.Context, delegatorAddr sdk.AccAddress) ([]sdk.Msg, error) {
+func WithdrawAllDelegatorRewards(ctx context.Context, clientCtx client.Context, delegatorAddr sdk.AccAddress) ([]sdk.Msg, error) {
 	// retrieve the comprehensive list of all validators which the
 	// delegator had submitted delegations to
-	bz, err := QueryDelegatorValidators(clientCtx, delegatorAddr)
+	bz, err := QueryDelegatorValidators(ctx, clientCtx, delegatorAddr)
 	if err != nil {
 		return nil, err
 	}

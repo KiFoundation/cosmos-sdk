@@ -65,7 +65,7 @@ func queryBonds(clientCtx client.Context, endpoint string) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(endpoint, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), endpoint, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -97,7 +97,7 @@ func queryDelegator(clientCtx client.Context, endpoint string) http.HandlerFunc 
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(endpoint, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), endpoint, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -134,7 +134,7 @@ func queryValidator(clientCtx client.Context, endpoint string) http.HandlerFunc 
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(endpoint, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), endpoint, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}

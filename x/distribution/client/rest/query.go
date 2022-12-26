@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -85,7 +86,7 @@ func delegatorRewardsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryDelegatorTotalRewards)
-		res, height, err := clientCtx.QueryWithData(route, bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -107,7 +108,7 @@ func delegationRewardsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		valAddr := mux.Vars(r)["validatorAddr"]
 
 		// query for rewards from a particular delegation
-		res, height, ok := checkResponseQueryDelegationRewards(w, clientCtx, delAddr, valAddr)
+		res, height, ok := checkResponseQueryDelegationRewards(r.Context(), w, clientCtx, delAddr, valAddr)
 		if !ok {
 			return
 		}
@@ -131,7 +132,7 @@ func delegatorWithdrawalAddrHandlerFn(clientCtx client.Context) http.HandlerFunc
 		}
 
 		bz := clientCtx.LegacyAmino.MustMarshalJSON(types.NewQueryDelegatorWithdrawAddrParams(delegatorAddr))
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/withdraw_addr", types.QuerierRoute), bz)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/withdraw_addr", types.QuerierRoute), bz)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -174,7 +175,7 @@ func validatorInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		// query commission
-		bz, err := common.QueryValidatorCommission(clientCtx, valAddr)
+		bz, err := common.QueryValidatorCommission(r.Context(), clientCtx, valAddr)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -186,7 +187,7 @@ func validatorInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
 
 		// self bond rewards
 		delAddr := sdk.AccAddress(valAddr)
-		bz, height, ok := checkResponseQueryDelegationRewards(w, clientCtx, delAddr.String(), valAddr.String())
+		bz, height, ok := checkResponseQueryDelegationRewards(r.Context(), w, clientCtx, delAddr.String(), valAddr.String())
 		if !ok {
 			return
 		}
@@ -221,7 +222,7 @@ func validatorRewardsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		delAddr := sdk.AccAddress(validatorAddr).String()
-		bz, height, ok := checkResponseQueryDelegationRewards(w, clientCtx, delAddr, valAddr)
+		bz, height, ok := checkResponseQueryDelegationRewards(r.Context(), w, clientCtx, delAddr, valAddr)
 		if !ok {
 			return
 		}
@@ -240,7 +241,7 @@ func paramsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParams)
-		res, height, err := clientCtx.QueryWithData(route, nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), route, nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -257,7 +258,7 @@ func communityPoolHandler(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/community_pool", types.QuerierRoute), nil)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/community_pool", types.QuerierRoute), nil)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -286,7 +287,7 @@ func outstandingRewardsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		}
 
 		bin := clientCtx.LegacyAmino.MustMarshalJSON(types.NewQueryValidatorOutstandingRewardsParams(validatorAddr))
-		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/validator_outstanding_rewards", types.QuerierRoute), bin)
+		res, height, err := clientCtx.QueryWithData(r.Context(), fmt.Sprintf("custom/%s/validator_outstanding_rewards", types.QuerierRoute), bin)
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -296,10 +297,10 @@ func outstandingRewardsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func checkResponseQueryDelegationRewards(
+func checkResponseQueryDelegationRewards(ctx context.Context,
 	w http.ResponseWriter, clientCtx client.Context, delAddr, valAddr string,
 ) (res []byte, height int64, ok bool) {
-	res, height, err := common.QueryDelegationRewards(clientCtx, delAddr, valAddr)
+	res, height, err := common.QueryDelegationRewards(ctx, clientCtx, delAddr, valAddr)
 	if rest.CheckInternalServerError(w, err) {
 		return nil, 0, false
 	}
