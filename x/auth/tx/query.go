@@ -21,7 +21,7 @@ import (
 // concatenated with an 'AND' operand. It returns a slice of Info object
 // containing txs and metadata. An error is returned if the query fails.
 // If an empty string is provided it will order txs by asc
-func QueryTxsByEvents(clientCtx client.Context, events []string, page, limit int, orderBy string) (*sdk.SearchTxsResult, error) {
+func QueryTxsByEvents(ctx context.Context, clientCtx client.Context, events []string, page, limit int, orderBy string) (*sdk.SearchTxsResult, error) {
 	if len(events) == 0 {
 		return nil, errors.New("must declare at least one event to search")
 	}
@@ -44,7 +44,7 @@ func QueryTxsByEvents(clientCtx client.Context, events []string, page, limit int
 
 	// TODO: this may not always need to be proven
 	// https://github.com/cosmos/cosmos-sdk/issues/6807
-	resTxs, err := node.TxSearch(context.Background(), query, true, &page, &limit, orderBy)
+	resTxs, err := node.TxSearch(ctx, query, true, &page, &limit, orderBy)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func QueryTxsByEvents(clientCtx client.Context, events []string, page, limit int
 
 // QueryTx queries for a single transaction by a hash string in hex format. An
 // error is returned if the transaction does not exist or cannot be queried.
-func QueryTx(clientCtx client.Context, hashHexStr string) (*sdk.TxResponse, error) {
+func QueryTx(ctx context.Context, clientCtx client.Context, hashHexStr string) (*sdk.TxResponse, error) {
 	hash, err := hex.DecodeString(hashHexStr)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func QueryTx(clientCtx client.Context, hashHexStr string) (*sdk.TxResponse, erro
 
 	// TODO: this may not always need to be proven
 	// https://github.com/cosmos/cosmos-sdk/issues/6807
-	resTx, err := node.Tx(context.Background(), hash, true)
+	resTx, err := node.Tx(ctx, hash, true)
 	if err != nil {
 		return nil, err
 	}

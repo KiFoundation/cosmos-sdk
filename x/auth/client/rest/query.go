@@ -99,7 +99,7 @@ func QueryTxsRequestHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		searchResult, err := authtx.QueryTxsByEvents(clientCtx, events, page, limit, "")
+		searchResult, err := authtx.QueryTxsByEvents(r.Context(), clientCtx, events, page, limit, "")
 		if rest.CheckInternalServerError(w, err) {
 			return
 		}
@@ -131,7 +131,7 @@ func QueryTxRequestHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		output, err := authtx.QueryTx(clientCtx, hashHexStr)
+		output, err := authtx.QueryTx(r.Context(), clientCtx, hashHexStr)
 		if err != nil {
 			if strings.Contains(err.Error(), hashHexStr) {
 				rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
